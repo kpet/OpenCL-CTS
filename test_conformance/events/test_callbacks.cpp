@@ -302,6 +302,10 @@ int test_callbacks_simultaneous(cl_device_id deviceID, cl_context context,
 
         error =
             actions[index]->Execute(queue, 1, eventPtr, &actionEvents[index]);
+        if (error != CL_SUCCESS)
+        {
+	        clSetUserEventStatus( gateEvent, CL_COMPLETE );
+        }
         test_error(error, "Unable to execute test action");
 
 
