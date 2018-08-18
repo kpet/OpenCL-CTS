@@ -2086,9 +2086,11 @@ int test_min_max_local_mem_size(cl_device_id deviceID, cl_context context,
     test_error(error,
                "clGetKernelWorkGroupInfo for CL_KERNEL_LOCAL_MEM_SIZE failed");
 
-    log_info("Reported local buffer usage for kernel "
-             "(CL_KERNEL_LOCAL_MEM_SIZE): %lld bytes.\n",
-             kernelLocalUsage);
+    log_info("Reported local buffer usage for kernel (CL_KERNEL_LOCAL_MEM_SIZE): %lld bytes.\n", kernelLocalUsage);
+    if (kernelLocalUsage != 0) {
+        log_error("ERROR: CL_KERNEL_LOCAL_MEM_SIZE returned %lld instead of 0\n", kernelLocalUsage);
+        return -1;
+    }
 
     /* Create some I/O streams */
     size_t sizeToAllocate =
@@ -2122,11 +2124,20 @@ int test_min_max_local_mem_size(cl_device_id deviceID, cl_context context,
     test_error(error, "Unable to set indexed kernel arguments");
 
 
+    /* Check the reported local size is now the max */
+    error = clGetKernelWorkGroupInfo(kernel, deviceID, CL_KERNEL_LOCAL_MEM_SIZE, sizeof(kernelLocalUsage), &kernelLocalUsage, NULL);
+    test_error(error, "clGetKernelWorkGroupInfo for CL_KERNEL_LOCAL_MEM_SIZE failed");
+    
+    log_info("Reported local buffer usage for kernel (CL_KERNEL_LOCAL_MEM_SIZE): %lld bytes.\n", kernelLocalUsage);
+    if (kernelLocalUsage != maxSize) {
+        log_error("ERROR: CL_KERNEL_LOCAL_MEM_SIZE returned %lld instead of %lld\n", kernelLocalUsage, maxSize);
+        return -1;
+    }
+    
     /* Test running the kernel and verifying it */
     threads[0] = numberOfInts;
-    localThreads[0] = 1;
-    log_info("Creating local buffer with %zu cl_ints (%zu bytes).\n",
-             numberOfInts, sizeToAllocate);
+    localThreads[0] = 2; // FIXME not testing much :D
+    log_info("Creating local buffer with %zu cl_ints (%zu bytes).\n", numberOfInts, sizeToAllocate);
 
     cl_event evt;
     cl_int evt_err;
@@ -2158,10 +2169,12 @@ int test_min_max_local_mem_size(cl_device_id deviceID, cl_context context,
         if (localData[i] != resultData[i])
         {
             clReleaseEvent(evt);
+            log_error("Results failed to verify @i=%d, expected %d but got %d.\n", i, localData[i], resultData[i]);
             free(localData);
             free(resultData);
-            log_error("Results failed to verify.\n");
             return -1;
+        } else {
+            log_error("Results verified @i=%d, expected %d and got %d.\n", i, localData[i], resultData[i]);
         }
     clReleaseEvent(evt);
     free(localData);
