@@ -111,7 +111,7 @@ test_definition test_list[] = {
 
     ADD_TEST_VERSION(context_destructor_callback, Version(3, 0)),
     ADD_TEST(mem_object_destructor_callback),
-    ADD_TEST(null_buffer_arg),
+    //ADD_TEST(null_buffer_arg),
     ADD_TEST(get_buffer_info),
     ADD_TEST(get_image2d_info),
     ADD_TEST(get_image3d_info),
