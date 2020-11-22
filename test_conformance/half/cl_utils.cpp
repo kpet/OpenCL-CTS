@@ -208,13 +208,10 @@ test_status InitCL( cl_device_id device )
 
 cl_program MakeProgram( cl_device_id device, const char *source[], int count )
 {
-    int error;
-    int i;
-
     //create the program
     cl_program program;
-    error = create_single_kernel_helper_create_program(gContext, &program, (cl_uint)count, source);
-    if( NULL == program )
+    int error = create_single_kernel_helper_create_program(gContext, &program, (cl_uint)count, source);
+    if(error != CL_SUCCESS)
     {
         vlog_error( "\t\tFAILED -- Failed to create program. (%d)\n", error );
         return NULL;
@@ -226,11 +223,16 @@ cl_program MakeProgram( cl_device_id device, const char *source[], int count )
         size_t  len;
         char    buffer[16384];
 
-        vlog_error("\t\tFAILED -- clBuildProgramExecutable() failed:\n");
-        clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+        vlog_error("\t\tFAILED -- clBuildProgram() failed:\n");
+        error = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+        if (error != CL_SUCCESS) {
+            vlog_error("\t\tFAILED -- clGetProgramBuildInfo() failed:\n");
+            clReleaseProgram( program );
+            return NULL;
+        }
         vlog_error("Log: %s\n", buffer);
         vlog_error("Source :\n");
-        for(i = 0; i < count; ++i) {
+        for(int i = 0; i < count; ++i) {
             vlog_error("%s", source[i]);
         }
         vlog_error("\n");
