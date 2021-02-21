@@ -53,8 +53,9 @@ ln -s CL OpenCL # For OSX builds
 cd ..
 
 # Get and build loader
-git clone https://github.com/KhronosGroup/OpenCL-ICD-Loader.git
+git clone https://github.com/kpet/OpenCL-ICD-Loader.git
 cd ${TOP}/OpenCL-ICD-Loader
+git checkout ext-prefix-suffix-cleanup
 mkdir build
 cd build
 cmake -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE} -DOPENCL_ICD_LOADER_HEADERS_DIR=${TOP}/OpenCL-Headers/ ..
