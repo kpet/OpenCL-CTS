@@ -18,5 +18,6 @@ jobs:
           ls -l
           ls -l test_conformance
           ls -l test_conformance/api
-          ./test_api
+          ls -l bin
+          ./bin/test_api
 
