@@ -78,5 +78,5 @@ cmake -DCL_INCLUDE_DIR=${TOP}/OpenCL-Headers \
       -DUSE_CL_EXPERIMENTAL=ON \
       -DGL_IS_SUPPORTED=${BUILD_OPENGL_TEST} \
       ..
-make -j2
+make -j2 VERBOSE=1
 

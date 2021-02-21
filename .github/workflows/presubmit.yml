@@ -16,5 +16,7 @@ jobs:
           ls -l
           cd build
           ls -l
+          ls -l test_conformance
+          ls -l test_conformance/api
           ./test_api
 
