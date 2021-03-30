@@ -140,7 +140,7 @@ int check_image(cl_command_queue queue, cl_mem mem) {
 }
 
 
-#define NUM_OF_WORK_ITEMS 8192*2
+#define NUM_OF_WORK_ITEMS 8192*32
 
 int execute_kernel(cl_context context, cl_command_queue *queue, cl_device_id device_id, int test, cl_mem mems[], int number_of_mems_used, int verify_checksum) {
 
@@ -279,6 +279,7 @@ int execute_kernel(cl_context context, cl_command_queue *queue, cl_device_id dev
         error = clSetKernelArg(kernel, number_of_mems_used+1, sizeof(cl_mem), &buffer_sizes);
         test_error(error, "clSetKernelArg failed");
         per_item = (cl_uint)ceil((double)max_size/global_dims[0]);
+        log_info("per_item = %u\n", per_item);
         if (per_item > CL_UINT_MAX)
             log_error("Size is too large for a uint parameter to the kernel. Expect invalid results.\n");
         per_item_uint = (cl_uint)per_item;
