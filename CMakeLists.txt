@@ -109,6 +109,8 @@ if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?Clang"
     add_cxx_flag_if_supported(-Wno-error=cpp) # Allow #warning directive
     add_cxx_flag_if_supported(-Wno-unknown-pragmas) # Issue #785
     add_cxx_flag_if_supported(-Wno-error=asm-operand-widths) # Issue #784
+    add_cxx_flag_if_supported(-Wno-error=overflow) # Fixed by #699
+    add_cxx_flag_if_supported(-Wno-error=stringop-overflow)
 
     # -msse -mfpmath=sse to force gcc to use sse for float math,
     # avoiding excess precision problems that cause tests like int2float
