@@ -103,7 +103,7 @@ int test_simple_write_image_pitch(cl_device_id device, cl_context cl_context_, c
   PASSIVE_REQUIRE_IMAGE_SUPPORT( device );
 
   char* host_image = (char*)malloc(image_bytes);
-  memset(host_image,0x0,image_bytes);
+  memset(host_image,0x1,image_bytes);
 
   cl_image_format fmt = { 0 };
   fmt.image_channel_order     = CL_RGBA;
@@ -129,6 +129,7 @@ int test_simple_write_image_pitch(cl_device_id device, cl_context cl_context_, c
 
   size_t mapped_pitch = 0;
   char* mapped_image = (char*)clEnqueueMapImage(q, image, CL_TRUE, CL_MAP_READ, origin, region, &mapped_pitch, NULL, 0, NULL, NULL, &err);
+  log_info("mapped_pitch = %zu", mapped_pitch);
   test_error(err,"clEnqueueMapImage");
 
   size_t errors = 0;
@@ -137,6 +138,9 @@ int test_simple_write_image_pitch(cl_device_id device, cl_context cl_context_, c
       char val = mapped_image[j*mapped_pitch+i];
       if ((i<imageW*pixel_bytes) && (val != 0xa)) {
         log_error("Bad value %x in image at (byte: %lu, row: %lu)\n",val,i,j);
+        ++errors;
+      } else if ((i>=imageW*pixel_bytes) && (val != 0x1)) {
+        log_error("Bad value %x outside image at (byte: %lu, row: %lu)\n",val,i,j);
         ++errors;
       }
     }
