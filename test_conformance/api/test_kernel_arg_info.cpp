@@ -34,7 +34,7 @@ static const std::vector<cl_kernel_arg_address_qualifier> address_qualifiers = {
 
 static const std::vector<std::string> image_arguments = {
     "image2d_t", "image3d_t",        "image2d_array_t",
-    "image1d_t", "image1d_buffer_t", "image1d_array_t"
+    "image1d_t", /*"image1d_buffer_t",*/ "image1d_array_t"
 };
 
 static const std::vector<cl_kernel_arg_access_qualifier> access_qualifiers = {
@@ -440,7 +440,7 @@ generate_all_type_arguments(cl_device_id deviceID)
 {
     std::vector<std::string> ret = {
         "char",           "short",        "int",           "float",
-        "void",           "uchar",        "unsigned char", "ushort",
+        /*"void",*/           "uchar",        "unsigned char", "ushort",
         "unsigned short", "uint",         "unsigned int",  "char unsigned",
         "short unsigned", "int unsigned", "signed short",  "signed int",
         "signed long",    "short signed", "int signed",    "signed",
