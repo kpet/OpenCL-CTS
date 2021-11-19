@@ -2174,7 +2174,7 @@ int test_min_max_local_mem_size(cl_device_id deviceID, cl_context context,
             free(resultData);
             return -1;
         } else {
-            log_error("Results verified @i=%d, expected %d and got %d.\n", i, localData[i], resultData[i]);
+            //log_error("Results verified @i=%d, expected %d and got %d.\n", i, localData[i], resultData[i]);
         }
     clReleaseEvent(evt);
     free(localData);
