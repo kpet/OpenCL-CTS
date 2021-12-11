@@ -165,7 +165,8 @@ static std::string generate_argument(const KernelArgInfo& kernel_arg)
  * be passed in and subsequently queried. */
 static std::string generate_kernel(const std::vector<KernelArgInfo>& all_args,
                                    const bool supports_3d_image_writes = false,
-                                   const bool kernel_uses_half_type = false)
+                                   const bool kernel_uses_half_type = false,
+                                   const bool kernel_uses_double_type = false)
 {
 
     std::string ret;
@@ -176,6 +177,10 @@ static std::string generate_kernel(const std::vector<KernelArgInfo>& all_args,
     if (kernel_uses_half_type)
     {
         ret += "#pragma OPENCL EXTENSION cl_khr_fp16 : enable\n";
+    }
+    if (kernel_uses_double_type)
+    {
+        ret += "#pragma OPENCL EXTENSION cl_khr_fp64 : enable\n";
     }
     ret += "kernel void get_kernel_arg_info(\n";
     for (size_t i = 0; i < all_args.size(); ++i)
@@ -676,7 +681,7 @@ static int run_scalar_vector_tests(cl_context context, cl_device_id deviceID)
                         || all_args.size() == MAX_NUMBER_OF_KERNEL_ARGS)
                     {
                         const std::string kernel_src = generate_kernel(
-                            all_args, false, device_supports_half(deviceID));
+                            all_args, false, device_supports_half(deviceID), device_supports_double(deviceID));
                         failed_tests += compare_kernel_with_expected(
                             context, deviceID, kernel_src.c_str(),
                             expected_args);
@@ -699,7 +704,7 @@ static int run_scalar_vector_tests(cl_context context, cl_device_id deviceID)
         }
     }
     const std::string kernel_src =
-        generate_kernel(all_args, false, device_supports_half(deviceID));
+        generate_kernel(all_args, false, device_supports_half(deviceID), device_supports_double(deviceID));
     failed_tests += compare_kernel_with_expected(
         context, deviceID, kernel_src.c_str(), expected_args);
     return failed_tests;
