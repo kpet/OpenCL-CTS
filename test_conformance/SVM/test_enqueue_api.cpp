@@ -147,7 +147,15 @@ int test_svm_enqueue_api(cl_device_id deviceID, cl_context c, cl_command_queue q
       generate_data(dstHostData, dstHostData.size(), seed);
 
       cl_uchar *srcBuffer = (cl_uchar *)clSVMAlloc(context, CL_MEM_READ_WRITE, data_size, 0);
+      if (srcBuffer == nullptr) {
+        print_error(CL_OUT_OF_RESOURCES, "clSVMAlloc failed for srcBuffer");
+      }
       cl_uchar *dstBuffer = (cl_uchar *)clSVMAlloc(context, CL_MEM_READ_WRITE, data_size, 0);
+      if (dstBuffer == nullptr) {
+        print_error(CL_OUT_OF_RESOURCES, "clSVMAlloc failed for dstBuffer");
+      }
+
+      //printf("srcBuffer = %p, dstBuffer = %p", srcBuffer, dstBuffer);
 
       clEventWrapper userEvent = clCreateUserEvent(context, &error);
       test_error(error, "clCreateUserEvent failed");
