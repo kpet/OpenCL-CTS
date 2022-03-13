@@ -85,8 +85,10 @@ verify_rgba8_image(unsigned char *image, unsigned char *outptr, int w, int h)
 
     for (i=0; i<w*h*4; i++)
     {
-        if (outptr[i] != image[i])
+        if (outptr[i] != image[i]) {
+            log_error("Failed verification @i = %d, expected %d but got %d\n", i, image[i], outptr[i]);
             return -1;
+        }
     }
 
     return 0;
@@ -96,8 +98,8 @@ int
 test_hostptr(cl_device_id device, cl_context context, cl_command_queue queue, int num_elements)
 {
     cl_float            *input_ptr[2], *output_ptr;
-    cl_program            program;
-    cl_kernel           kernel;
+    clProgramWrapper    program;
+    clKernelWrapper     kernel;
     size_t              threads[3]={0,0,0};
     cl_image_format     img_format;
     cl_uchar            *rgba8_inptr, *rgba8_outptr;
@@ -271,8 +273,6 @@ test_hostptr(cl_device_id device, cl_context context, cl_command_queue queue, in
         log_info("verify_rgba8_image passed after clEnqueueCopyImage, clEnqueueReadImage\n");
     }
     // cleanup
-    clReleaseKernel(kernel);
-    clReleaseProgram(program);
     free(input_ptr[0]);
     free(input_ptr[1]);
     free(output_ptr);
