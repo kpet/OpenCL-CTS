@@ -866,7 +866,7 @@ test_status callSingleTestFunction(test_definition test,
     cl_context context = NULL;
     cl_command_queue queue = NULL;
 
-    log_info("%s...\n", test.name);
+    log_info("%s ...\n", test.name);
     fflush(stdout);
 
     const Version device_version = get_device_cl_version(deviceToUse);

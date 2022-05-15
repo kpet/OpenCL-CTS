@@ -452,7 +452,7 @@ int test_get_program_source(cl_device_id deviceID, cl_context context, cl_comman
     test_error( error, "Unable to get program source" );
     if (strlen(buffer) != line_length && online_compilation)
     {
-        log_error( "ERROR: Length of program source is incorrect!\n" );
+        log_error( "ERROR: Length of program source is incorrect (expected %zu but got %zu)!\n", line_length, strlen(buffer) );
         return -1;
     }
 

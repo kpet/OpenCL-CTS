@@ -3110,8 +3110,8 @@ int test_execute_after_included_header_link(cl_device_id deviceID,
 #endif
     if (_mkdir("foo") != 0)
     {
-        log_error("ERROR: Unable to create directory foo! (in %s:%d)\n",
-                  __FILE__, __LINE__);
+        log_error("ERROR: Unable to create directory foo! (in %s:%d): %s\n",
+                  __FILE__, __LINE__, strerror(errno));
         return -1;
     }
     if (_mkdir("foo/bar") != 0)
