@@ -38,7 +38,7 @@ int
 
     exec.runTestNonUniformWorkGroup(sizeof(globalSize)/sizeof(globalSize[0]), globalSize, localSize, Range::BASIC);
   }
-
+#if 0
   // non_uniform_1d_prime_number_basic
   {
     int primeNumber = PrimeNumbers::getPrimeNumberInRange(maxWgSize, 2*maxWgSize);
@@ -140,7 +140,7 @@ int
 
     exec.runTestNonUniformWorkGroup(sizeof(globalSize)/sizeof(globalSize[0]), globalSize, localSize, Range::BASIC);
   }
-
+#endif
   return exec.status();
 }
 

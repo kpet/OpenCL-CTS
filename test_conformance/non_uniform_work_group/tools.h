@@ -59,7 +59,7 @@ private:
 
 // Stores information about errors
 namespace Error {
-#define MAX_NUMBER_OF_PRINTED_ERRORS 10
+#define MAX_NUMBER_OF_PRINTED_ERRORS 100000
   enum Type{
     ERR_GLOBAL_SIZE=0,
     ERR_GLOBAL_WORK_OFFSET,

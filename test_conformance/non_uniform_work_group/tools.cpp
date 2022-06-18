@@ -193,6 +193,7 @@ ErrorClass::ErrorClass() {
 }
 
 void ErrorClass::show(Type err, std::string where, std::string additionalInfo) {
+  abort();
   ++_overallNumberOfErrors;
 
   err = (errorString.find(err) == errorString.end())?ERR_UNKNOWN:err;
@@ -228,6 +229,7 @@ void ErrorClass::show(Type whatErr, std::string where, cl_ulong valueIs, cl_ulon
 
 
 void ErrorClass::show(std::string description) {
+  abort();
   ++_overallNumberOfErrors;
   ++_stats[ERR_DIFFERENT];
   if (_overallNumberOfErrors < MAX_NUMBER_OF_PRINTED_ERRORS)
@@ -256,6 +258,7 @@ void ErrorClass::showStats() {
 }
 
 bool ErrorClass::checkError() {
+  printf("ErrorClass::checkError: _overallNumberOfErrors = %u\n", _overallNumberOfErrors);
   return _overallNumberOfErrors > 0;
 }
 
@@ -264,6 +267,7 @@ void ErrorClass::synchronizeStatsMap() {
   for (unsigned short i=0; i<sizeof(_errorArrayCounter)/sizeof(_errorArrayCounter[0]); i++) {
     if(_errorArrayCounter[i] == 0)
       continue;
+    printf("ErrorClass::synchronizeStatsMap, _errorArrayCounter[%u] = %u\n", i, _errorArrayCounter[i]);
 
     _stats[static_cast<Type>(i)] += _errorArrayCounter[i];
     _overallNumberOfErrors += _errorArrayCounter[i];

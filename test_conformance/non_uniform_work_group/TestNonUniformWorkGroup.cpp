@@ -406,7 +406,7 @@ void TestNonUniformWorkGroup::verifyData (DataContainerAttrib * reference, DataC
 
   std::ostringstream tmp;
   std::string errorLocation;
-
+  printf("TestNonUniformWorkGroup::verifyData\n");
   if (_testRange & Range::BASIC) {
     for (unsigned short i = 0; i < MAX_DIMS; i++) {
       tmp.str("");
@@ -415,22 +415,27 @@ void TestNonUniformWorkGroup::verifyData (DataContainerAttrib * reference, DataC
       errorLocation = tmp.str();
 
       if (results->get_global_size[i] != reference->get_global_size[i]) {
+        printf("TestNonUniformWorkGroup::verifyData global size %u\n", i);
         _err.show(Error::ERR_GLOBAL_SIZE, errorLocation, results->get_global_size[i], reference->get_global_size[i]);
       }
 
       if (results->get_global_offset[i] != reference->get_global_offset[i]) {
+        printf("TestNonUniformWorkGroup::verifyData global offset %u\n", i);
         _err.show(Error::ERR_GLOBAL_WORK_OFFSET, errorLocation, results->get_global_offset[i], reference->get_global_offset[i]);
       }
 
       if (results->get_local_size[i] != reference->get_local_size[i] || results->get_local_size[i] > _maxWorkItemSizes[i]) {
+        printf("TestNonUniformWorkGroup::verifyData local size %u\n", i);
         _err.show(Error::ERR_LOCAL_SIZE, errorLocation, results->get_local_size[i], reference->get_local_size[i]);
       }
 
       if (results->get_enqueued_local_size[i] != reference->get_enqueued_local_size[i] || results->get_enqueued_local_size[i] > _maxWorkItemSizes[i]) {
+        printf("TestNonUniformWorkGroup::verifyData enqueued local size %u\n", i);
         _err.show(Error::ERR_ENQUEUED_LOCAL_SIZE, errorLocation, results->get_enqueued_local_size[i], reference->get_enqueued_local_size[i]);
       }
 
       if (results->get_num_groups[i] != reference->get_num_groups[i]) {
+        printf("TestNonUniformWorkGroup::verifyData num groups %u\n", i);
         _err.show(Error::ERR_NUM_GROUPS, errorLocation, results->get_num_groups[i], reference->get_num_groups[i]);
       }
     }
@@ -442,6 +447,7 @@ void TestNonUniformWorkGroup::verifyData (DataContainerAttrib * reference, DataC
   errorLocation = tmp.str();
   if (_testRange & Range::BASIC) {
     if (results->get_work_dim != reference->get_work_dim) {
+        printf("TestNonUniformWorkGroup::verifyData work dim\n");
       _err.show(Error::ERR_WORK_DIM, errorLocation, results->get_work_dim, reference->get_work_dim);
     }
   }
@@ -792,7 +798,7 @@ void SubTestExecutor::runTestNonUniformWorkGroup(
     const cl_uint dims, size_t *globalSize, const size_t *localSize,
     const size_t *globalWorkOffset, const size_t *reqdWorkGroupSize, int range)
 {
-
+    printf("SubTestExecutor::runTestNonUniformWorkGroup\n");
 
     int err;
     ++_overallCounter;
