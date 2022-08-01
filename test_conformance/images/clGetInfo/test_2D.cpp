@@ -39,47 +39,36 @@ int test_get_image_info_single( cl_context context, image_descriptor *imageInfo,
     imageDesc.image_row_pitch = row_pitch;
     imageDesc.image_slice_pitch = slice_pitch;
 
-    size_t expectedRowPitch;
-    if (imageInfo->rowPitch == 0) {
-        expectedRowPitch = imageInfo->width * get_pixel_size(imageInfo->format);
-    } else {
-        expectedRowPitch = imageInfo->rowPitch;
-    }
-
-    size_t expectedSlicePitch;
-
     // Construct testing source
+    // Note: for now, just reset the pitches, since they only can actually be different
+    // if we use CL_MEM_USE_HOST_PTR or CL_MEM_COPY_HOST_PTR
+    imageInfo->rowPitch = imageInfo->width * get_pixel_size( imageInfo->format );
+    imageInfo->slicePitch = 0;
     switch (imageInfo->type)
     {
         case CL_MEM_OBJECT_IMAGE1D:
-            expectedSlicePitch = 0;
             if ( gDebugTrace )
                 log_info( " - Creating 1D image %d with flags=0x%lx row_pitch=%d slice_pitch=%d host_ptr=%p...\n", (int)imageInfo->width, (unsigned long)flags, (int)row_pitch, (int)slice_pitch, host_ptr );
             break;
         case CL_MEM_OBJECT_IMAGE2D:
-            expectedSlicePitch = imageInfo->rowPitch * imageInfo->height;
             if ( gDebugTrace )
                 log_info( " - Creating 2D image %d by %d with flags=0x%lx row_pitch=%d slice_pitch=%d host_ptr=%p...\n", (int)imageInfo->width, (int)imageInfo->height, (unsigned long)flags, (int)row_pitch, (int)slice_pitch, host_ptr );
             break;
         case CL_MEM_OBJECT_IMAGE3D:
-            expectedSlicePitch = imageInfo->rowPitch * imageInfo->height;
+            imageInfo->slicePitch = imageInfo->rowPitch * imageInfo->height;
             if ( gDebugTrace )
                 log_info( " - Creating 3D image %d by %d by %d with flags=0x%lx row_pitch=%d slice_pitch=%d host_ptr=%p...\n", (int)imageInfo->width, (int)imageInfo->height, (int)imageInfo->depth, (unsigned long)flags, (int)row_pitch, (int)slice_pitch, host_ptr );
             break;
         case CL_MEM_OBJECT_IMAGE1D_ARRAY:
-            expectedSlicePitch = expectedRowPitch;
+            imageInfo->slicePitch = imageInfo->rowPitch;
             if ( gDebugTrace )
                 log_info( " - Creating 1D image array %d by %d with flags=0x%lx row_pitch=%d slice_pitch=%d host_ptr=%p...\n", (int)imageInfo->width, (int)imageInfo->arraySize, (unsigned long)flags, (int)row_pitch, (int)slice_pitch, host_ptr );
             break;
         case CL_MEM_OBJECT_IMAGE2D_ARRAY:
-            expectedSlicePitch = imageInfo->rowPitch * imageInfo->height;
+            imageInfo->slicePitch = imageInfo->rowPitch * imageInfo->height;
             if ( gDebugTrace )
                 log_info( " - Creating 2D image array %d by %d by %d with flags=0x%lx row_pitch=%d slice_pitch=%d host_ptr=%p...\n", (int)imageInfo->width, (int)imageInfo->height, (int)imageInfo->arraySize, (unsigned long)flags, (int)row_pitch, (int)slice_pitch, host_ptr );
             break;
-    }
-    
-    if (imageInfo->slicePitch != 0) {
-        expectedSlicePitch = imageInfo->slicePitch;
     }
 
     image = clCreateImage(context, flags, imageInfo->format, &imageDesc, host_ptr, &error);
@@ -126,8 +115,8 @@ int test_get_image_info_single( cl_context context, image_descriptor *imageInfo,
     test_error( error, "Unable to get image info (element size)" );
     if( outElementSize != get_pixel_size( imageInfo->format ) )
     {
-        log_error( "ERROR: image element size returned is invalid! (expected %zu, got %zu)\n",
-                  get_pixel_size( imageInfo->format ), outElementSize );
+        log_error( "ERROR: image element size returned is invalid! (expected %d, got %d)\n",
+                  (int)get_pixel_size( imageInfo->format ), (int)outElementSize );
         return 1;
     }
 
@@ -135,19 +124,13 @@ int test_get_image_info_single( cl_context context, image_descriptor *imageInfo,
     error = clGetImageInfo( image, CL_IMAGE_ROW_PITCH, sizeof( outRowPitch ), &outRowPitch, NULL );
     test_error( error, "Unable to get image info (row pitch)" );
 
-    if (outRowPitch != expectedRowPitch) {
-        log_error("ERROR: image row pitch returned is invalid! (expected %zu, got %zu)\n",
-                  expectedRowPitch, outRowPitch);
-        return 1;
-    }
-
   size_t outSlicePitch;
   error = clGetImageInfo( image, CL_IMAGE_SLICE_PITCH, sizeof( outSlicePitch ), &outSlicePitch, NULL );
   test_error( error, "Unable to get image info (slice pitch)" );
-    if( outSlicePitch != expectedSlicePitch )
+    if( imageInfo->type == CL_MEM_OBJECT_IMAGE1D && outSlicePitch != 0 )
     {
-        log_error( "ERROR: slice pitch returned is invalid! (expected %zu, got %zu)\n",
-              expectedSlicePitch, outSlicePitch );
+        log_error( "ERROR: slice pitch returned is invalid! (expected %d, got %d)\n",
+              (int)0, (int)outSlicePitch );
         return 1;
     }
 

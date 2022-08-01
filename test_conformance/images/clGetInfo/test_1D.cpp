@@ -97,7 +97,6 @@ int test_get_image_info_1D( cl_device_id device, cl_context context, cl_image_fo
     {
         for( int i = 0; i < NUM_IMAGE_ITERATIONS; i++ )
         {
-            size_t rowPitchForHostPtr;
             cl_ulong size;
             // Loop until we get a size that a) will fit in the max alloc size and b) that an allocation of that
             // image, the result array, plus offset arrays, will fit in the global ram space
@@ -105,27 +104,25 @@ int test_get_image_info_1D( cl_device_id device, cl_context context, cl_image_fo
             {
                 imageInfo.width = (size_t)random_log_in_range( 16, (int)maxWidth / 32, seed );
 
-                rowPitchForHostPtr = imageInfo.width * pixelSize;
+                imageInfo.rowPitch = imageInfo.width * pixelSize;
                 size_t extraWidth = (int)random_log_in_range( 0, 64, seed );
-                rowPitchForHostPtr += extraWidth;
+                imageInfo.rowPitch += extraWidth;
 
                 do {
                     extraWidth++;
-                    rowPitchForHostPtr += extraWidth;
-                } while ((rowPitchForHostPtr % pixelSize) != 0);
+                    imageInfo.rowPitch += extraWidth;
+                } while ((imageInfo.rowPitch % pixelSize) != 0);
 
-                size = (cl_ulong)rowPitchForHostPtr * 4;
+                size = (cl_ulong)imageInfo.rowPitch * 4;
             } while(  size > maxAllocSize || ( size * 3 ) > memSize );
 
             for (unsigned int j=0; j < sizeof(all_host_ptr_flags)/sizeof(cl_mem_flags); j++)
             {
                 if( gDebugTrace )
                     log_info( "   at size %d (flags[%u] 0x%x pitch %d) out of %d\n", (int)imageInfo.width, j, (unsigned int) all_host_ptr_flags[j], (int)imageInfo.rowPitch, (int)maxWidth );
-                imageInfo.rowPitch = 0;
                 if ( test_get_image_info_single( context, &imageInfo, seed, all_host_ptr_flags[j], 0, 0 ) )
                     return -1;
                 if (all_host_ptr_flags[j] & (CL_MEM_COPY_HOST_PTR | CL_MEM_USE_HOST_PTR)) { // skip test when host_ptr is NULL
-                    imageInfo.rowPitch = rowPitchForHostPtr;
                     if ( test_get_image_info_single( context, &imageInfo, seed, all_host_ptr_flags[j], imageInfo.rowPitch, 0 ) )
                         return -1;
                 }
