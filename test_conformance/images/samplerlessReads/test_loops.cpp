@@ -138,6 +138,33 @@ int test_image_set( cl_device_id device, cl_context context, cl_command_queue qu
     if (get_format_list(context, imageType, readOnlyFormats, CL_MEM_READ_ONLY))
         return -1;
 
+    if (imageType == CL_MEM_OBJECT_IMAGE1D_BUFFER) {
+        // Image 1D buffer tests also need 1D images with the same format,
+        // only keep formats supported for both image types.
+        std::vector<cl_image_format> readOnly1DFormats;
+        if (get_format_list(context, CL_MEM_OBJECT_IMAGE1D, readOnly1DFormats,
+                            CL_MEM_READ_ONLY))
+            return -1;
+
+        // Keep only intersecting formats with read only and read write flags
+        for (unsigned int i = 0; i < readOnlyFormats.size(); i++)
+        {
+            for (unsigned int j = 0; j < readOnly1DFormats.size(); j++)
+            {
+                if (readOnlyFormats[i].image_channel_data_type
+                        == readOnly1DFormats[j].image_channel_data_type
+                    && readOnlyFormats[i].image_channel_order
+                        == readOnly1DFormats[j].image_channel_order)
+                {
+                    formatList.push_back(readOnlyFormats[i]);
+                    break;
+                }
+            }
+        }
+        readOnlyFormats = formatList;
+        formatList.clear();
+    }
+
     if (gTestReadWrite)
     {
         std::vector<cl_image_format> readWriteFormats;
